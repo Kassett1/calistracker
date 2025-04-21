@@ -1,11 +1,10 @@
-import logo from './logo.svg';
+import Calendar from "./components/Calendar.js";
 
 function App() {
   return (
-    <div className="App">
-      <h1 className='text-color4'>Test</h1>
-      <p className='text-red-500'>Test</p>
-    </div>
+    <main>
+      <Calendar/>
+    </main>
   );
 }
 
