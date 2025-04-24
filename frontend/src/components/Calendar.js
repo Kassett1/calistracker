@@ -115,10 +115,10 @@ function Calendar() {
     border-color5 shadow-lg bg-color4 rounded-[10px] mx-[5vw] my-[3vh]"
     >
       <div>
-        <header className="flex items-center justify-between px-[2vw] py-[2vh]">
-          <p className="current-date">
+        <header className="flex items-center justify-between px-[2vw] py-[2vh] bg-color3 rounded-t-[7px] border-b-[2px] border-color5">
+          <h2 className="current-date ">
             {months[currMonth]} {currYear}
-          </p>
+          </h2>
           <div>
             <button onClick={prevFunction}>L</button>
             <button onClick={nextFunction}>R</button>
