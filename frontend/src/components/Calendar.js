@@ -20,6 +20,21 @@ function Calendar() {
   let lastDayOfMonth = new Date(currYear, currMonth + 1, 0).getDay();
   lastDayOfMonth = lastDayOfMonth === 0 ? 6 : lastDayOfMonth - 1;
 
+  // Récupère la date d'aujourd'hui
+  const today = new Date();
+  const isToday = (day) =>
+    day === today.getDate() &&
+    currMonth === today.getMonth() &&
+    currYear === today.getFullYear();
+
+  const successDates = ["2025-04-23", "2025-04-20", "2025-03-20"];
+  const failDates = ["2025-04-22"];
+
+  const formatDate = (day) => {
+    const m = currMonth + 1;
+    return `${currYear}-${m < 10 ? "0" + m : m}-${day < 10 ? "0" + day : day}`;
+  };
+
   const months = [
     "Janvier",
     "Février",
@@ -40,7 +55,7 @@ function Calendar() {
   // Jours du mois précédent à afficher (gris)
   for (let i = firstDayOfMonth; i > 0; i--) {
     calendarDays.push(
-      <li className="w-[calc(100%/7)] mt-[1vh] mb-[1vh] inactive">
+      <li className="w-[calc(100%/7)] mt-[1vh] mb-[1vh] inactive-calenda">
         {lastDayOfLastMonth - i + 1}
       </li>
     );
@@ -48,8 +63,20 @@ function Calendar() {
 
   // Jours du mois actuel
   for (let i = 1; i <= daysInMonth; i++) {
+    const dateStr = formatDate(i);
+    const isSuccess = successDates.includes(dateStr);
+    const isFail = failDates.includes(dateStr);
+    const isTodayClass = isToday(i) ? "active" : "";
+
+    const bgIcon = isSuccess ? "text-red-500" : isFail ? "text-green-500" : "";
+
     calendarDays.push(
-      <li className="w-[calc(100%/7)] mt-[1vh] mb-[1vh]">{i}</li>
+      <li
+        key={i}
+        className={`w-[calc(100%/7)] mt-[1vh] mb-[1vh] ${isTodayClass} ${bgIcon}`}
+      >
+        {i}
+      </li>
     );
   }
 
@@ -83,8 +110,10 @@ function Calendar() {
   };
 
   return (
-    <div className="flex items-center justify-center border-t-[2px] border-l-[2px] border-b-[4px] border-r-[4px] 
-    border-color5 shadow-lg bg-color4 rounded-[10px] mx-[5vw] my-[3vh]">
+    <div
+      className="flex items-center justify-center border-t-[2px] border-l-[2px] border-b-[4px] border-r-[4px] 
+    border-color5 shadow-lg bg-color4 rounded-[10px] mx-[5vw] my-[3vh]"
+    >
       <div>
         <header className="flex items-center justify-between px-[2vw] py-[2vh]">
           <p className="current-date">
