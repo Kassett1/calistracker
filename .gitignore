@@ -4,6 +4,7 @@
 /frontend/node_modules
 /frontend/pnp*
 /frontend/.pnp.js
+/backend/node_modules
 
 # testing
 /frontend/coverage
@@ -20,4 +21,5 @@
 # fichiers systèmes et configs
 /frontend/.DS_Store
 /frontend/.env*
+/backend/.env*
 
