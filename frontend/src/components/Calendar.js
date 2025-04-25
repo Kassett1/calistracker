@@ -114,8 +114,8 @@ function Calendar() {
       className="flex items-center justify-center border-t-[3px] border-l-[3px] border-b-[6px] border-r-[6px] 
     border-color5 shadow-xl bg-color4 rounded-[10px] mx-[5vw] my-[3vh]"
     >
-      <div>
-        <header className="flex items-center justify-between px-[5vw] py-[2vh] bg-color3 rounded-t-[5px] border-b-[2px] border-color5">
+      <div className="w-full">
+        <header className="flex items-center justify-between px-[5vw] py-[2vh] bg-color3 rounded-t-[5px] border-b-[3px] border-color5">
           <button onClick={prevFunction}><img className="w-5 h-5" src="icones/arrow-left.svg" alt="<"/></button>
           <h2 className="current-date font-luckiest text-3xl">
             {months[currMonth]} {currYear}
