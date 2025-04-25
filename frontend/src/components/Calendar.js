@@ -55,7 +55,7 @@ function Calendar() {
   // Jours du mois précédent à afficher (gris)
   for (let i = firstDayOfMonth; i > 0; i--) {
     calendarDays.push(
-      <li className="w-[calc(100%/7)] mt-[1vh] mb-[1vh] inactive-calenda">
+      <li className="w-[calc(100%/7)] mt-[1vh] mb-[1vh] text-gray-500 font-cabin text-base">
         {lastDayOfLastMonth - i + 1}
       </li>
     );
@@ -66,14 +66,14 @@ function Calendar() {
     const dateStr = formatDate(i);
     const isSuccess = successDates.includes(dateStr);
     const isFail = failDates.includes(dateStr);
-    const isTodayClass = isToday(i) ? "active" : "";
+    const isTodayClass = isToday(i) ? "calendar-active text-color1" : "";
 
-    const bgIcon = isSuccess ? "text-red-500" : isFail ? "text-green-500" : "";
+    const bgIcon = isSuccess ? "calendar-fail" : isFail ? "calendar-validate" : "";
 
     calendarDays.push(
       <li
         key={i}
-        className={`w-[calc(100%/7)] mt-[1vh] mb-[1vh] ${isTodayClass} ${bgIcon}`}
+        className={`w-[calc(100%/7)] mt-[1vh] mb-[1vh] font-cabin text-lg ${isTodayClass} ${bgIcon}`}
       >
         {i}
       </li>
@@ -84,7 +84,7 @@ function Calendar() {
   if (lastDayOfMonth !== 6) {
     for (let i = 1; i <= 6 - lastDayOfMonth; i++) {
       calendarDays.push(
-        <li className="w-[calc(100%/7)] mt-[1vh] mb-[1vh] inactive">{i}</li>
+        <li className="w-[calc(100%/7)] mt-[1vh] mb-[1vh] text-gray-500 font-cabin text-base">{i}</li>
       );
     }
   }
@@ -111,33 +111,31 @@ function Calendar() {
 
   return (
     <div
-      className="flex items-center justify-center border-t-[2px] border-l-[2px] border-b-[4px] border-r-[4px] 
-    border-color5 shadow-lg bg-color4 rounded-[10px] mx-[5vw] my-[3vh]"
+      className="flex items-center justify-center border-t-[3px] border-l-[3px] border-b-[6px] border-r-[6px] 
+    border-color5 shadow-xl bg-color4 rounded-[10px] mx-[5vw] my-[3vh]"
     >
       <div>
-        <header className="flex items-center justify-between px-[2vw] py-[2vh] bg-color3 rounded-t-[7px] border-b-[2px] border-color5">
-          <h2 className="current-date ">
+        <header className="flex items-center justify-between px-[5vw] py-[2vh] bg-color3 rounded-t-[5px] border-b-[2px] border-color5">
+          <button onClick={prevFunction}><img className="w-5 h-5" src="icones/arrow-left.svg" alt="<"/></button>
+          <h2 className="current-date font-luckiest text-3xl">
             {months[currMonth]} {currYear}
           </h2>
-          <div>
-            <button onClick={prevFunction}>L</button>
-            <button onClick={nextFunction}>R</button>
-          </div>
+          <button onClick={nextFunction}><img className="w-5 h-5" src="icones/arrow-right.svg" alt=">"/></button>
         </header>
 
         <div className="px-[2vw] py-[2vh]">
           {/* En-têtes des jours de la semaine */}
           <ul className="flex flex-wrap text-center">
-            <li className="w-[calc(100%/7)] mt-[1vh] mb-[1vh]">L</li>
-            <li className="w-[calc(100%/7)] mt-[1vh] mb-[1vh]">M</li>
-            <li className="w-[calc(100%/7)] mt-[1vh] mb-[1vh]">M</li>
-            <li className="w-[calc(100%/7)] mt-[1vh] mb-[1vh]">J</li>
-            <li className="w-[calc(100%/7)] mt-[1vh] mb-[1vh]">V</li>
-            <li className="w-[calc(100%/7)] mt-[1vh] mb-[1vh]">S</li>
-            <li className="w-[calc(100%/7)] mt-[1vh] mb-[1vh]">D</li>
+            <li className="w-[calc(100%/7)] mt-[1vh] mb-[1vh] font-cabin text-xl ">L</li>
+            <li className="w-[calc(100%/7)] mt-[1vh] mb-[1vh] font-cabin text-xl ">M</li>
+            <li className="w-[calc(100%/7)] mt-[1vh] mb-[1vh] font-cabin text-xl ">M</li>
+            <li className="w-[calc(100%/7)] mt-[1vh] mb-[1vh] font-cabin text-xl ">J</li>
+            <li className="w-[calc(100%/7)] mt-[1vh] mb-[1vh] font-cabin text-xl ">V</li>
+            <li className="w-[calc(100%/7)] mt-[1vh] mb-[1vh] font-cabin text-xl ">S</li>
+            <li className="w-[calc(100%/7)] mt-[1vh] mb-[1vh] font-cabin text-xl ">D</li>
           </ul>
           {/* Jours du calendrier (mois précédent + mois courant + mois suivant) */}
-          <ul className="flex flex-wrap text-center">{calendarDays}</ul>
+          <ul className="flex flex-wrap text-center items-center justify-center">{calendarDays}</ul>
         </div>
       </div>
     </div>

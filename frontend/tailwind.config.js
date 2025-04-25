@@ -12,6 +12,10 @@ module.exports = {
         accent1: "#B4473B",
         accent2: "#C7AC76",
       },
+      fontFamily: {
+        luckiest: ['"Luckiest Guy"', "cursive"],
+        cabin: ['"Cabin"', "cursive"],
+      },
     },
   },
   plugins: [],

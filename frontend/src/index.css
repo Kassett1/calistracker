@@ -2,23 +2,62 @@
 @tailwind components;
 @tailwind utilities;
 
-.inactive {
-  color: #aaa;
+@font-face {
+  font-family: 'Luckiest Guy';
+  src: url('../public/fonts/LuckiestGuy.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }
 
-.active {
+@font-face {
+  font-family: 'Cabin';
+  src: url('../public/fonts/Cabin.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.calendar-active, .calendar-validate, .calendar-fail{
   position: relative;
   z-index: 1;
-  color: white;
 }
 
-.active::before {
+.calendar-active::before {
   position: absolute;
   content: "";
-  height: 30px;
-  width: 30px;
-  background-color: #ff0000;
+  height: 35px;
+  width: 35px;
+  background-color: #B4473B;
   border-radius: 50%;
+  z-index: -1;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.calendar-validate::before{
+  position: absolute;
+  content: "";
+  height: 35px;
+  width: 35px;
+  background-image: url("../public/icones/validate.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  z-index: -1;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.calendar-fail::before{
+  position: absolute;
+  content: "";
+  height: 35px;
+  width: 35px;
+  background-image: url("../public/icones/cross.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
   z-index: -1;
   left: 50%;
   top: 50%;
