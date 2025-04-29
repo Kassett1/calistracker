@@ -40,26 +40,50 @@ app.listen(port, () => {
 
 app.post("/add-session", (req, res) => {
   console.log("\n----------------------------------------");
-  console.log("\nDate de séance : " + req.body.date); // Vérifie ce que le client envoie
+  console.log("\nDate de séance : " + req.body.date);
 
-  res.send("Séance reçue !");
+  const date = new Date(req.body.date);
+  date.setHours(0, 0, 0, 0);
 
   const today = new Date();
-  today.setHours(0, 0, 0, 0); // on ignore l'heure
-  const date = new Date(req.body.date);
-  date.setHours(0, 0, 0, 0); // on ignore aussi l'heure
+  today.setHours(0, 0, 0, 0);
+
   const etat = today <= date ? "faite" : "ratee";
 
-  // Envoi de la requête sql
+  // Formatage manuel sans décalage UTC
+  const formattedDate = `${date.getFullYear()}-${
+    date.getMonth() + 1
+  }-${date.getDate()}`;
+
   connection.query(
-    "INSERT INTO calendrier (date, etat) VALUES (?, ?)",
-    [date, etat],
-    (err) => {
+    "SELECT * FROM calendrier WHERE DATE(date) = ?",
+    [formattedDate],
+    (err, results) => {
       if (err) {
-        console.error("❌ Erreur lors de l'insertion de la séance :", err);
-      } else {
-        console.log("📅 Séance insérée avec succès !");
+        console.error("❌ Erreur lors de la vérification de la date :", err);
+        return;
       }
+
+      if (results.length > 0) {
+        console.log(
+          "⚠️  Une séance existe déjà pour cette date, aucune insertion faite."
+        );
+        return;
+      }
+
+      connection.query(
+        "INSERT INTO calendrier (date, etat) VALUES (?, ?)",
+        [formattedDate, etat],
+        (err) => {
+          if (err) {
+            console.error("❌ Erreur lors de l'insertion de la séance :", err);
+          } else {
+            console.log("📅 Séance insérée avec succès !");
+          }
+        }
+      );
     }
   );
+
+  res.send("Séance reçue !");
 });
