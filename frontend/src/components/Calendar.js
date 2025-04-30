@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 function Calendar() {
   const date = new Date();
@@ -18,8 +18,8 @@ function Calendar() {
     currMonth === today.getMonth() &&
     currYear === today.getFullYear();
 
-  const successDates = ["2025-04-23", "2025-04-20", "2025-03-20"];
-  const failDates = ["2025-04-22"];
+  const [successDates, setSuccessDates] = useState([]);
+  const [failDates, setFailDates] = useState([]);
 
   const formatDate = (day) => {
     const m = currMonth + 1;
@@ -70,6 +70,27 @@ function Calendar() {
     }
   };
 
+  useEffect(() => {
+    fetch("http://localhost:3001/get-sessions")
+      .then((res) => {
+        if (!res.ok)
+          throw new Error("Erreur lors de la récupération des sessions");
+        return res.json();
+      })
+      .then((data) => {
+        setSuccessDates(data.successDates);
+        setFailDates(data.failDates);
+      })
+      .catch((err) => {
+        console.error("Erreur fetch :", err);
+      });
+  }, []);
+
+  useEffect(() => {
+    console.log(successDates);
+    console.log(failDates);
+  }, [successDates, failDates]);
+
   return (
     <div className="flex items-center justify-center border-t-[3px] border-l-[3px] border-b-[6px] border-r-[6px] border-color5 shadow-xl bg-color4 rounded-[10px] mx-[5vw] my-[3vh]">
       <div className="w-full">
@@ -119,9 +140,9 @@ function Calendar() {
                 ? "calendar-active text-color1"
                 : "";
               const bgIcon = isSuccess
-                ? "calendar-fail"
-                : isFail
                 ? "calendar-validate"
+                : isFail
+                ? "calendar-fail"
                 : "";
 
               return (
@@ -146,6 +167,11 @@ function Calendar() {
           </ul>
         </div>
       </div>
+      <ul>
+      {failDates.map((day,index) => {
+        <li>{index}</li>
+        })}
+      </ul>
     </div>
   );
 }

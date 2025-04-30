@@ -5,7 +5,7 @@ const cors = require("cors");
 const mysql = require("mysql2");
 
 // 🌐 Configuration de la connexion MySQL
-const connection = mysql.createConnection({
+const connection = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -23,15 +23,6 @@ app.use(
   })
 );
 app.use(express.json());
-
-// 🔌 Connexion à la base de données
-connection.connect((err) => {
-  if (err) {
-    console.error("\n❌ Erreur de connexion à la base de données:", err);
-  } else {
-    console.log("\n✅ Connecté à la base de données !");
-  }
-});
 
 // 🌍 Routes
 app.listen(port, () => {
@@ -86,4 +77,35 @@ app.post("/add-session", (req, res) => {
   );
 
   res.send("Séance reçue !");
+});
+
+app.get("/get-sessions", (req, res) => {
+  console.log("➡️ Requête reçue pour /get-sessions");
+  connection.query("SELECT * FROM calendrier", (err, results) => {
+    if (err) {
+      console.error("❌ Erreur lors de l'obtention des dates :", err);
+      res.status(500).json({ error: "Erreur serveur" });
+      return;
+    }
+
+    const successDates = [];
+    const failDates = [];
+
+    results.forEach((session) => {
+      const date = new Date(session.date);
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1) > 9 ? (date.getMonth() + 1) : "0" + (date.getMonth() + 1);
+      const day = date.getDate() < 10 ? "0" + date.getDate()  : date.getDate() ;
+      const formattedDate = `${year}-${month}-${day}`;
+
+      if (session.etat === "faite") {
+        successDates.push(formattedDate);
+      } else {
+        failDates.push(formattedDate);
+      }
+    });
+
+    res.setHeader("Content-Type", "application/json");
+    res.json({ successDates, failDates });
+  });
 });
