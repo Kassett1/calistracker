@@ -1,15 +1,17 @@
-import Calendar from "./components/Calendar.js";
-import Sessions from "./components/Sessions.js";
-import Goals from "./components/Goals.js";
-import Menu from "./components/Menu.js";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import Login from "./pages/Login.js";
+import Home from "./pages/Home.js";
 
 function App() {
   return (
     <main>
-      <Calendar/>
-      <Sessions/>
-      <Goals/>
-      <Menu/>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Home />} />
+        </Routes>
+      </BrowserRouter>
     </main>
   );
 }

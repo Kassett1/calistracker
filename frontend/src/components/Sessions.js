@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 function Sessions() {
   const [session, setSession] = useState({
-    date: new Date(2025, 3, 18),
+    date: new Date(2025, 4, 18),
     exercises: ["4*10 Tractions", "4*15 Dips"],
   });
 
@@ -19,12 +19,10 @@ function Sessions() {
       },
       body: JSON.stringify({
         date: formattedDate, // On envoie la date
+        userId : localStorage.getItem("userId"),
       }),
     })
       .then((response) => response.text())
-      .then((data) => {
-        console.log("Réponse du serveur :", data);
-      })
       .catch((error) => {
         console.error("Erreur lors de l'envoi :", error);
       });

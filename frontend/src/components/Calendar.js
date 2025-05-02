@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 
 function Calendar() {
   const date = new Date();
@@ -71,7 +71,8 @@ function Calendar() {
   };
 
   useEffect(() => {
-    fetch("http://localhost:3001/get-sessions")
+    fetch("http://localhost:3001/get-sessions", {
+    })
       .then((res) => {
         if (!res.ok)
           throw new Error("Erreur lors de la récupération des sessions");
@@ -86,10 +87,10 @@ function Calendar() {
       });
   }, []);
 
-  useEffect(() => {
-    console.log(successDates);
-    console.log(failDates);
-  }, [successDates, failDates]);
+  // useEffect(() => {
+  //   console.log(successDates);
+  //   console.log(failDates);
+  // }, [successDates, failDates]);
 
   return (
     <div className="flex items-center justify-center border-t-[3px] border-l-[3px] border-b-[6px] border-r-[6px] border-color5 shadow-xl bg-color4 rounded-[10px] mx-[5vw] my-[3vh]">

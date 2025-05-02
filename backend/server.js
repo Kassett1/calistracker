@@ -31,7 +31,7 @@ app.listen(port, () => {
 
 app.post("/add-session", (req, res) => {
   console.log("\n----------------------------------------");
-  console.log("\nDate de séance : " + req.body.date);
+  // console.log("\nDate de séance : " + req.body.date);
 
   const date = new Date(req.body.date);
   date.setHours(0, 0, 0, 0);
@@ -47,8 +47,8 @@ app.post("/add-session", (req, res) => {
   }-${date.getDate()}`;
 
   connection.query(
-    "SELECT * FROM calendrier WHERE DATE(date) = ?",
-    [formattedDate],
+    "SELECT * FROM calendrier WHERE DATE(date) = ? and user_id = ?",
+    [formattedDate, req.body.userId],
     (err, results) => {
       if (err) {
         console.error("❌ Erreur lors de la vérification de la date :", err);
@@ -63,8 +63,8 @@ app.post("/add-session", (req, res) => {
       }
 
       connection.query(
-        "INSERT INTO calendrier (date, etat) VALUES (?, ?)",
-        [formattedDate, etat],
+        "INSERT INTO calendrier (date, etat, user_id) VALUES (?, ?, ?)",
+        [formattedDate, etat, req.body.userId],
         (err) => {
           if (err) {
             console.error("❌ Erreur lors de l'insertion de la séance :", err);
@@ -75,12 +75,11 @@ app.post("/add-session", (req, res) => {
       );
     }
   );
-
-  res.send("Séance reçue !");
 });
 
 app.get("/get-sessions", (req, res) => {
-  console.log("➡️ Requête reçue pour /get-sessions");
+  console.log("\n----------------------------------------");
+  console.log("\n➡️ Requête reçue pour /get-sessions");
   connection.query("SELECT * FROM calendrier", (err, results) => {
     if (err) {
       console.error("❌ Erreur lors de l'obtention des dates :", err);
@@ -94,8 +93,11 @@ app.get("/get-sessions", (req, res) => {
     results.forEach((session) => {
       const date = new Date(session.date);
       const year = date.getFullYear();
-      const month = (date.getMonth() + 1) > 9 ? (date.getMonth() + 1) : "0" + (date.getMonth() + 1);
-      const day = date.getDate() < 10 ? "0" + date.getDate()  : date.getDate() ;
+      const month =
+        date.getMonth() + 1 > 9
+          ? date.getMonth() + 1
+          : "0" + (date.getMonth() + 1);
+      const day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
       const formattedDate = `${year}-${month}-${day}`;
 
       if (session.etat === "faite") {
@@ -108,4 +110,83 @@ app.get("/get-sessions", (req, res) => {
     res.setHeader("Content-Type", "application/json");
     res.json({ successDates, failDates });
   });
+});
+
+app.post("/signup", (req, res) => {
+  console.log("\n----------------------------------------");
+  const email = req.body.email;
+  const password = req.body.password;
+
+  connection.query(
+    "SELECT * FROM users WHERE email = ?",
+    [email],
+    (err, results) => {
+      if (err) {
+        console.error(
+          "❌ Erreur lors de la vérification des utilisateurs :",
+          err
+        );
+        return;
+      }
+
+      if (results.length > 0) {
+        console.log(
+          "\n⚠️  Un utilisateur existe déjà pour cette adresse mail, aucune insertion faite."
+        );
+        return;
+      }
+
+      connection.query(
+        "INSERT INTO users (email, password) VALUES (?, ?)",
+        [email, password],
+        (err) => {
+          if (err) {
+            console.error(
+              "❌ Erreur lors de l'insertion de l'utilisateur ':",
+              err
+            );
+          } else {
+            console.log("\n👤 Utilisateur inséré avec succès !");
+          }
+        }
+      );
+    }
+  );
+});
+
+app.post("/login", (req, res) => {
+  console.log("\n----------------------------------------");
+  const email = req.body.email;
+  const password = req.body.password;
+
+  connection.query(
+    "SELECT * FROM users WHERE email = ?",
+    [email],
+    (err, results) => {
+      if (err) {
+        console.error("❌ Erreur lors de la requête :", err);
+        return res
+          .status(500)
+          .json({ success: false, message: "Erreur serveur" });
+      }
+
+      if (results.length === 0) {
+        // Aucun utilisateur trouvé
+        console.log("\n❌ Utilisateur non trouvé")
+        return res.json({ success: false, message: "Utilisateur non trouvé" });
+      }
+
+      const user = results[0];
+
+      if (user.password === password) {
+        // Mot de passe correct
+        console.log("\n✅ Utilisateur trouvé")
+        return res.json({ success: true, userId: user.id });
+      } else {
+        // Mauvais mot de passe
+        console.log("\n❌ Mot de passe incorrect")
+        return res.json({ success: false, message: "Mot de passe incorrect" });
+      }
+    }
+  );
 });
