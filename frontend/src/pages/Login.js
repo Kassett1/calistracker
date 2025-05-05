@@ -8,30 +8,37 @@ function Login() {
     password: "",
   });
 
-  useEffect(() => {
-    console.log(mode);
-  }, [mode]);
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    fetch(`http://localhost:3001/${mode}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(credentials),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          localStorage.setItem("userId", data.userId);
-          console.log("Utilisateur connecté !");
-        } else {
-          console.log("Erreur :", data.message);
-        }
-        
-      });
+    if (mode === "login") {
+      fetch(`http://localhost:3001/${mode}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(credentials),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            localStorage.setItem("token", data.token);
+            console.log("Utilisateur connecté !");
+          } else {
+            console.log("Erreur :", data.message);
+          }
+        });
+    } else {
+      fetch(`http://localhost:3001/${mode}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(credentials),
+      })
+        .then((res) => res.json());
+        // jsp s il manque un truc ici , peut etre pour gérer les erreurs
+    }
   };
 
   const handleLogin = () => {
@@ -44,7 +51,7 @@ function Login() {
 
   const handleDisconnect = () => {
     localStorage.removeItem("userId");
-  }
+  };
 
   return (
     <div>

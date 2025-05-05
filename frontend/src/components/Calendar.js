@@ -71,7 +71,12 @@ function Calendar() {
   };
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+
     fetch("http://localhost:3001/get-sessions", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then((res) => {
         if (!res.ok)
@@ -86,11 +91,6 @@ function Calendar() {
         console.error("Erreur fetch :", err);
       });
   }, []);
-
-  // useEffect(() => {
-  //   console.log(successDates);
-  //   console.log(failDates);
-  // }, [successDates, failDates]);
 
   return (
     <div className="flex items-center justify-center border-t-[3px] border-l-[3px] border-b-[6px] border-r-[6px] border-color5 shadow-xl bg-color4 rounded-[10px] mx-[5vw] my-[3vh]">
@@ -169,8 +169,8 @@ function Calendar() {
         </div>
       </div>
       <ul>
-      {failDates.map((day,index) => {
-        <li>{index}</li>
+        {failDates.map((day, index) => {
+          <li>{index}</li>;
         })}
       </ul>
     </div>

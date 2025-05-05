@@ -2,11 +2,13 @@ import React, { useState } from "react";
 
 function Sessions() {
   const [session, setSession] = useState({
-    date: new Date(2025, 4, 18),
+    date: new Date(2025, 3, 18),
     exercises: ["4*10 Tractions", "4*15 Dips"],
   });
 
   const handleFinish = () => {
+    const token = localStorage.getItem("token");
+
     const date = session.date;
     const formattedDate = `${date.getFullYear()}-${
       date.getMonth()+1
@@ -16,10 +18,10 @@ function Sessions() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         date: formattedDate, // On envoie la date
-        userId : localStorage.getItem("userId"),
       }),
     })
       .then((response) => response.text())
