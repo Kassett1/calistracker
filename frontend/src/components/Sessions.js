@@ -1,8 +1,9 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 
-function Sessions() {
+function Sessions({ onSessionAdded }) {
   const [session, setSession] = useState({
-    date: new Date(2025, 3, 18),
+    date: new Date(2025, 3, 19),
     exercises: ["4*10 Tractions", "4*15 Dips"],
   });
 
@@ -11,7 +12,7 @@ function Sessions() {
 
     const date = session.date;
     const formattedDate = `${date.getFullYear()}-${
-      date.getMonth()+1
+      date.getMonth() + 1
     }-${date.getDate()}`;
 
     fetch("http://localhost:3001/add-session", {
@@ -24,7 +25,12 @@ function Sessions() {
         date: formattedDate, // On envoie la date
       }),
     })
-      .then((response) => response.text())
+      .then((response) => {
+        if (!response.ok) throw new Error("Erreur lors de l'envoi");
+        // ✅ Appelle onSessionAdded pour incrémenter refreshCount
+        onSessionAdded();
+        return response.text();
+      })
       .catch((error) => {
         console.error("Erreur lors de l'envoi :", error);
       });
@@ -64,5 +70,9 @@ function Sessions() {
     </div>
   );
 }
+
+Sessions.propTypes = {
+  onSessionAdded: PropTypes.func.isRequired,
+};
 
 export default Sessions;

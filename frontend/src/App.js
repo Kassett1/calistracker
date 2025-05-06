@@ -1,15 +1,26 @@
+import React, { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Login from "./pages/Login.js";
 import Home from "./pages/Home.js";
 
 function App() {
+  const [refreshCount, setRefreshCount] = useState(0);
+
   return (
     <main>
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/" element={<Home />} />
+          <Route
+            path="/"
+            element={
+              <Home
+                refreshCount={refreshCount}
+                onSessionAdded={() => setRefreshCount((c) => c + 1)}
+              />
+            }
+          />
         </Routes>
       </BrowserRouter>
     </main>

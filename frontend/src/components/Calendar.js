@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 
-function Calendar() {
+function Calendar({ refreshCount }) {
   const date = new Date();
   const [currYear, setCurrYear] = useState(date.getFullYear());
   const [currMonth, setCurrMonth] = useState(date.getMonth());
@@ -70,7 +71,7 @@ function Calendar() {
     }
   };
 
-  useEffect(() => {
+  const fetchSessions = () => {
     const token = localStorage.getItem("token");
 
     fetch("http://localhost:3001/get-sessions", {
@@ -90,7 +91,11 @@ function Calendar() {
       .catch((err) => {
         console.error("Erreur fetch :", err);
       });
-  }, []);
+  };
+
+  useEffect(() => {
+    fetchSessions();
+  }, [refreshCount]);
 
   return (
     <div className="flex items-center justify-center border-t-[3px] border-l-[3px] border-b-[6px] border-r-[6px] border-color5 shadow-xl bg-color4 rounded-[10px] mx-[5vw] my-[3vh]">
@@ -170,11 +175,15 @@ function Calendar() {
       </div>
       <ul>
         {failDates.map((day, index) => {
-          <li>{index}</li>;
+          <li>{index}</li>
         })}
       </ul>
     </div>
   );
 }
+
+Calendar.propTypes = {
+  refreshCount: PropTypes.number.isRequired,
+};
 
 export default Calendar;
