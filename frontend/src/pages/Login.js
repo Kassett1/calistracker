@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [mode, setMode] = useState("login");
+
+  const navigate = useNavigate();
 
   const [credentials, setCredentials] = useState({
     email: "",
@@ -24,6 +27,7 @@ function Login() {
           if (data.success) {
             localStorage.setItem("token", data.token);
             console.log("Utilisateur connecté !");
+            navigate("/");
           } else {
             console.log("Erreur :", data.message);
           }
@@ -37,7 +41,6 @@ function Login() {
         body: JSON.stringify(credentials),
       })
         .then((res) => res.json());
-        // jsp s il manque un truc ici , peut etre pour gérer les erreurs
     }
   };
 
@@ -50,7 +53,7 @@ function Login() {
   };
 
   const handleDisconnect = () => {
-    localStorage.removeItem("userId");
+    localStorage.removeItem("token");
   };
 
   return (

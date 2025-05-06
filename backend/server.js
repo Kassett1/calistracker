@@ -239,9 +239,7 @@ app.post("/login", (req, res) => {
         if (isMatch) {
           console.log("✅ Mot de passe correct, génération du token");
           // 3️⃣ Génération du token JWT
-          const token = jwt.sign({ userId: user.id }, jwtSecret, {
-            expiresIn: "1h",
-          });
+          const token = jwt.sign({ userId: user.id }, jwtSecret);
           return res.json({ success: true, token });
         } else {
           console.log("❌ Mot de passe incorrect");
