@@ -11,7 +11,7 @@ function Home({ refreshCount, onSessionAdded }) {
       <ProtectedRoute>
         <Calendar refreshCount={refreshCount} />
         <Sessions onSessionAdded={onSessionAdded} />
-        <Goals />
+        <Goals refreshCount={refreshCount} onSessionAdded={onSessionAdded}/>
         <Menu />
       </ProtectedRoute>
     </>

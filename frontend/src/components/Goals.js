@@ -1,12 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 
-function Goals() {
+function Goals({ refreshCount, onSessionAdded }) {
   const [goals, setGoals] = useState(["4*10 Tractions", "4*15 Dips"]);
   const [newGoal, setNewGoal] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
 
-  const handleDeleteGoal = (index) => {
-    setGoals(goals.filter((_, i) => i !== index));
+  const fetchGoals = () => {
+    const token = localStorage.getItem("token");
+
+    fetch("http://localhost:3001/get-goals", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok)
+          throw new Error("Erreur lors de la récupération des objectifs");
+        return res.json();
+      })
+      .then((data) => {
+        setGoals(data.goals);
+      })
+      .catch((err) => {
+        console.error("Erreur fetch :", err);
+      });
+  };
+
+  const handleDeleteGoal = (g) => {
+    const token = localStorage.getItem("token");
+
+    fetch(`http://localhost:3001/delete-goal/${g.id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Suppression échouée");
+        return res.json();
+      })
+      .then((data) => {
+        console.log(data.message);
+        onSessionAdded();
+      })
+      .catch((err) => console.error("Erreur fetch :", err));
   };
 
   const handleOpen = () => {
@@ -20,8 +56,35 @@ function Goals() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const token = localStorage.getItem("token");
+
+    fetch("http://localhost:3001/add-goal", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        goal: newGoal,
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error("Erreur lors de l'envoi");
+        // ✅ Appelle onSessionAdded pour incrémenter refreshCount
+        onSessionAdded();
+        return response.text();
+      })
+      .catch((error) => {
+        console.error("Erreur lors de l'envoi :", error);
+      });
+
     handleClose();
   };
+
+  useEffect(() => {
+    fetchGoals();
+  }, [refreshCount]);
 
   return (
     <div className="border-t-[3px] border-l-[3px] border-b-[6px] border-r-[6px] border-color5 shadow-lg bg-color4 rounded-[10px] mx-[5vw] my-[3vh]">
@@ -29,15 +92,15 @@ function Goals() {
         Objectifs
       </h2>
       <ul>
-        {goals.map((goal, index) => (
+        {goals.map((g, index) => (
           <li
             key={index}
             className="border-b-[2px] border-color5 px-[5vw] py-[1vh] flex justify-between items-center"
           >
-            <span className="font-cabin text-lg">{goal}</span>
+            <span className="font-cabin text-lg">{g.goal}</span>
             <button
               className="ml-4 text-accent1 font-luckiest text-3xl"
-              onClick={() => handleDeleteGoal(index)}
+              onClick={() => handleDeleteGoal(g)}
             >
               ×
             </button>
@@ -48,7 +111,7 @@ function Goals() {
       {/* Bouton + pour ouvrir la popup */}
       <div className="flex justify-center">
         <button
-         className="
+          className="
          bg-accent2
          rounded-full
          w-10 h-10 
@@ -124,5 +187,10 @@ function Goals() {
     </div>
   );
 }
+
+Goals.propTypes = {
+  refreshCount: PropTypes.number.isRequired,
+  onSessionAdded: PropTypes.func.isRequired,
+};
 
 export default Goals;
