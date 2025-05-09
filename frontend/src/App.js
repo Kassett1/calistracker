@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Login from "./pages/Login.js";
 import Home from "./pages/Home.js";
+import Chronometer from "./pages/Chronometer.js";
 
 function App() {
   const [refreshCount, setRefreshCount] = useState(0);
@@ -21,6 +22,7 @@ function App() {
               />
             }
           />
+          <Route path="/chrono" element={<Chronometer />} />
         </Routes>
       </BrowserRouter>
     </main>
