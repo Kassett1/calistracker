@@ -9,7 +9,7 @@ function Menu() {
   ];
 
   return (
-    <div className="bg-color5 sticky bottom-0">
+    <div className="bg-color5 fixed bottom-0 w-full">
       <ul className="flex gap-[3vw] justify-between px-[5vw] relative bottom-[3vh]">
         {items.map(({ src, to }, i) => (
           <li

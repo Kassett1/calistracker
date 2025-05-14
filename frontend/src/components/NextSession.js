@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 
-function Sessions({ onSessionAdded }) {
+function NextSession({ onSessionAdded }) {
   const [session, setSession] = useState({
-    date: new Date(2025, 3, 19),
+    date: new Date(2025, 4, 19),
     exercises: ["4*10 Tractions", "4*15 Dips"],
   });
 
@@ -15,7 +15,7 @@ function Sessions({ onSessionAdded }) {
       date.getMonth() + 1
     }-${date.getDate()}`;
 
-    fetch("http://localhost:3001/add-session", {
+    fetch("http://localhost:3001/add-date", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -71,8 +71,8 @@ function Sessions({ onSessionAdded }) {
   );
 }
 
-Sessions.propTypes = {
+NextSession.propTypes = {
   onSessionAdded: PropTypes.func.isRequired,
 };
 
-export default Sessions;
+export default NextSession;

@@ -1,48 +1,26 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 
-function Goals({ refreshCount, onSessionAdded }) {
-  const [goals, setGoals] = useState(["4*10 Tractions", "4*15 Dips"]);
-  const [newGoal, setNewGoal] = useState("");
+export default function SessionItem({ session, onSessionAdded }) {
+  const [newExercise, setNewExercise] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
 
-  const fetchGoals = () => {
+  const handleDeleteExercise = (e) => {
     const token = localStorage.getItem("token");
 
-    fetch("http://localhost:3001/get-goals", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => {
-        if (!res.ok)
-          throw new Error("Erreur lors de la récupération des objectifs");
-        return res.json();
-      })
-      .then((data) => {
-        setGoals(data.goals);
-      })
-      .catch((err) => {
-        console.error("Erreur fetch :", err);
-      });
-  };
-
-  const handleDeleteGoal = (g) => {
-    const token = localStorage.getItem("token");
-
-    fetch(`http://localhost:3001/delete-goal/${g.id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Suppression échouée");
-        return res.json();
-      })
-      .then((data) => {
-        console.log(data.message);
-        onSessionAdded();
-      })
-      .catch((err) => console.error("Erreur fetch :", err));
+    // fetch(`http://localhost:3001/delete-goal/${g.id}`, {
+    //   method: "DELETE",
+    //   headers: { Authorization: `Bearer ${token}` },
+    // })
+    //   .then((res) => {
+    //     if (!res.ok) throw new Error("Suppression échouée");
+    //     return res.json();
+    //   })
+    //   .then((data) => {
+    //     console.log(data.message);
+    //     onSessionAdded();
+    //   })
+    //   .catch((err) => console.error("Erreur fetch :", err));
   };
 
   const handleOpen = () => {
@@ -51,28 +29,30 @@ function Goals({ refreshCount, onSessionAdded }) {
 
   const handleClose = () => {
     setIsFormOpen(false);
-    setNewGoal("");
+    setNewExercise("");
   };
 
-  const handleSubmit = (e) => {
+  function handleSubmitExercise(e) {
     e.preventDefault();
 
     const token = localStorage.getItem("token");
 
-    fetch("http://localhost:3001/add-goal", {
+    fetch("http://localhost:3001/add-exercise", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        goal: newGoal,
+        id : session.id,
+        exercise: newExercise,
       }),
     })
       .then((response) => {
         if (!response.ok) throw new Error("Erreur lors de l'envoi");
         // ✅ Appelle onSessionAdded pour incrémenter refreshCount
         onSessionAdded();
+        console.log("qzdqzdqzoli")
         return response.text();
       })
       .catch((error) => {
@@ -80,27 +60,26 @@ function Goals({ refreshCount, onSessionAdded }) {
       });
 
     handleClose();
-  };
-
-  useEffect(() => {
-    fetchGoals();
-  }, [refreshCount]);
-
+  }
+  
   return (
-    <div className="border-t-[3px] border-l-[3px] border-b-[6px] border-r-[6px] border-color5 shadow-lg bg-color4 rounded-[10px] mx-[5vw] my-[3vh] mb-[15vh]">
+    <div
+      key={session.id}
+      className="border-t-[3px] border-l-[3px] border-b-[6px] border-r-[6px] border-color5 shadow-lg bg-color4 rounded-[10px] mx-[5vw] my-[3vh]"
+    >
       <h2 className="bg-color3 text-center rounded-t-[7px] border-b-[3px] border-color5 font-luckiest text-3xl px-[5vw] py-[2vh]">
-        Objectifs
+        {session.name}
       </h2>
       <ul>
-        {goals.map((g, index) => (
+        {session.exercises.map((exercise, index) => (
           <li
             key={index}
             className="border-b-[2px] border-color5 px-[5vw] py-[1vh] flex justify-between items-center"
           >
-            <span className="font-cabin text-lg">{g.goal}</span>
+            <span className="font-cabin text-lg">{exercise}</span>
             <button
               className="ml-4 text-accent1 font-luckiest text-3xl"
-              onClick={() => handleDeleteGoal(g)}
+              //onClick={() => handleDeleteExercise(exercise)}
             >
               ×
             </button>
@@ -124,11 +103,13 @@ function Goals({ refreshCount, onSessionAdded }) {
         >
           +
         </button>
+        <button>Supprimer</button>
       </div>
 
       {/* Popup du formulaire */}
       <form
-        onSubmit={handleSubmit}
+        key={session.id}
+        onSubmit={(e) => handleSubmitExercise(e, session.id)}
         className={`
           fixed inset-0 flex items-center justify-center
           bg-black/50
@@ -156,14 +137,14 @@ function Goals({ refreshCount, onSessionAdded }) {
             ×
           </button>
 
-          <label htmlFor="goal" className="font-cabin text-xl">
-            Nouvel objectif :
+          <label htmlFor="exercise" className="font-cabin text-xl">
+            Nouvel exercice :
           </label>
           <input
             type="text"
-            id="goal"
-            value={newGoal}
-            onChange={(e) => setNewGoal(e.target.value)}
+            id="exercise"
+            value={newExercise}
+            onChange={(e) => setNewExercise(e.target.value)}
             required
             placeholder="Ex : 50 pompes"
             className="bg-color1 rounded-[10px] px-[3vw] py-[0.5vh]
@@ -188,9 +169,12 @@ function Goals({ refreshCount, onSessionAdded }) {
   );
 }
 
-Goals.propTypes = {
-  refreshCount: PropTypes.number.isRequired,
-  onSessionAdded: PropTypes.func.isRequired,
+SessionItem.propTypes = {
+  onSessionAdded : PropTypes.func.isRequired,
+  session: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired,
+    exercises: PropTypes.arrayOf(PropTypes.string).isRequired,
+    day: PropTypes.string,
+  }).isRequired,
 };
-
-export default Goals;

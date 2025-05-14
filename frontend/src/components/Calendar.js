@@ -74,7 +74,7 @@ function Calendar({ refreshCount }) {
   const fetchSessions = () => {
     const token = localStorage.getItem("token");
 
-    fetch("http://localhost:3001/get-sessions", {
+    fetch("http://localhost:3001/get-dates", {
       headers: {
         Authorization: `Bearer ${token}`,
       },

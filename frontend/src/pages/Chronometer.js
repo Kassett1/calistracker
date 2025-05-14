@@ -7,7 +7,7 @@ function Chronometer() {
     <>
       <ProtectedRoute>
         <Chrono />
-        {/* <Menu /> */}
+        <Menu />
       </ProtectedRoute>
     </>
   );

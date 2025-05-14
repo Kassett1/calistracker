@@ -156,7 +156,7 @@ app.post("/login", (req, res) => {
   );
 });
 
-app.post("/add-session", verifyToken, (req, res) => {
+app.post("/add-date", verifyToken, (req, res) => {
   console.log("\n----------------------------------------");
 
   // 1️⃣ Récupère la date envoyée par le client
@@ -211,8 +211,8 @@ app.post("/add-session", verifyToken, (req, res) => {
   );
 });
 
-app.get("/get-sessions", verifyToken, (req, res) => {
-  console.log("\n➡️ Requête reçue pour /get-sessions");
+app.get("/get-dates", verifyToken, (req, res) => {
+  console.log("\n➡️ Requête reçue pour /get-dates");
 
   // 1. Récupération de l'userId depuis le middleware
   const userId = req.userId;
@@ -343,6 +343,90 @@ app.delete("/delete-goal/:id", verifyToken, (req, res) => {
       }
       console.log("✅ Objectif supprimé avec succès !");
       return res.status(200).json({ message: "Objectif supprimé" });
+    }
+  );
+});
+
+app.get("/get-sessions", verifyToken, (req, res) => {
+  console.log("\n➡️ Requête reçue pour /get-sessions");
+
+  // 1. Récupération de l'userId depuis le middleware
+  const userId = req.userId;
+
+  // 2. Requête SQL filtrée sur user_id
+  connection.query(
+    "SELECT * FROM sessions WHERE user_id = ?",
+    [userId],
+    (err, results) => {
+      if (err) {
+        console.error("❌ Erreur SQL lors de l'obtention des séances :", err);
+        return res.status(500).json({ error: "Erreur serveur" });
+      }
+
+      // 3. Construction du tableau des objectifs
+      const sessions = results.map((session) => ({
+        id: session.id,
+        name: session.name,
+        exercises: JSON.parse(session.exercises),
+        day: session.day,
+      }));
+
+      // 4. Envoi de la réponse JSON
+      return res.json({ sessions });
+    }
+  );
+});
+
+app.post("/add-exercise", verifyToken, (req, res) => {
+  console.log("\n----------------------------------------");
+
+  // 1️⃣ On récupère l’ID de la séance et l’exercice envoyé par le client
+  const sessionId = req.body.id;
+  const newExercise = req.body.exercise;
+
+  // 2️⃣ On récupère l’ID de l’utilisateur, injecté par le middleware verifyToken
+  const userId = req.userId;
+
+  // 3️⃣ On commence par vérifier que l’exercice n’est pas déjà dans le tableau JSON
+  const checkSql = `
+    SELECT 1
+      FROM sessions
+     WHERE id = ?
+       AND user_id = ?
+       AND JSON_CONTAINS(exercises, JSON_QUOTE(?), '$')
+  `;
+  connection.query(
+    checkSql,
+    [sessionId, userId, newExercise],
+    (err, results) => {
+      if (err) {
+        console.error("❌ Erreur SQL lors de la vérification :", err);
+        return res.status(500).json({ message: "Erreur serveur" });
+      }
+
+      if (results.length > 0) {
+        // 4️⃣ Si l’exo existe déjà → conflit
+        console.log("⚠️ Exercice déjà présent dans cette séance");
+        return res.status(409).json({ message: "Exercice déjà existant" });
+      }
+
+      // 5️⃣ Sinon, on l’ajoute à la fin du tableau JSON `exercises`
+      const updateSql = `
+      UPDATE sessions
+         SET exercises = JSON_ARRAY_APPEND(exercises, '$', ?)
+       WHERE id = ?
+         AND user_id = ?
+    `;
+      connection.query(updateSql, [newExercise, sessionId, userId], (err2) => {
+        if (err2) {
+          console.error("❌ Erreur SQL lors de l’insertion :", err2);
+          return res.status(500).json({ message: "Erreur d'insertion" });
+        }
+
+        // 6️⃣ Tout s’est bien passé
+        console.log("✅ Exercice ajouté avec succès !");
+        return res.status(201).json({ message: "Exercice ajouté" });
+      });
     }
   );
 });
