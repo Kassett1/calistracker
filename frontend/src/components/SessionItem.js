@@ -5,22 +5,46 @@ export default function SessionItem({ session, onSessionAdded }) {
   const [newExercise, setNewExercise] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
 
-  const handleDeleteExercise = (e) => {
+  const handleDeleteExercise = (exercise) => {
     const token = localStorage.getItem("token");
+    fetch(
+      `http://localhost:3001/delete-exercise/${session.id}/${encodeURIComponent(
+        exercise
+      )}`,
+      {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    )
+      .then((r) => {
+        if (!r.ok) throw new Error("Suppression échouée");
+        return r.json();
+      })
+      .then(({ message }) => {
+        console.log(message);
+        onSessionAdded(); // rafraîchir la liste
+      })
+      .catch((err) => console.error("Erreur fetch :", err));
+  };
 
-    // fetch(`http://localhost:3001/delete-goal/${g.id}`, {
-    //   method: "DELETE",
-    //   headers: { Authorization: `Bearer ${token}` },
-    // })
-    //   .then((res) => {
-    //     if (!res.ok) throw new Error("Suppression échouée");
-    //     return res.json();
-    //   })
-    //   .then((data) => {
-    //     console.log(data.message);
-    //     onSessionAdded();
-    //   })
-    //   .catch((err) => console.error("Erreur fetch :", err));
+  const handleDeleteSession = () => {
+    const token = localStorage.getItem("token");
+    fetch(
+      `http://localhost:3001/delete-session/${session.id}`,
+      {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    )
+      .then((r) => {
+        if (!r.ok) throw new Error("Suppression échouée");
+        return r.json();
+      })
+      .then(({ message }) => {
+        console.log(message);
+        onSessionAdded(); // rafraîchir la liste
+      })
+      .catch((err) => console.error("Erreur fetch :", err));
   };
 
   const handleOpen = () => {
@@ -44,7 +68,7 @@ export default function SessionItem({ session, onSessionAdded }) {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        id : session.id,
+        id: session.id,
         exercise: newExercise,
       }),
     })
@@ -52,7 +76,7 @@ export default function SessionItem({ session, onSessionAdded }) {
         if (!response.ok) throw new Error("Erreur lors de l'envoi");
         // ✅ Appelle onSessionAdded pour incrémenter refreshCount
         onSessionAdded();
-        console.log("qzdqzdqzoli")
+        console.log("qzdqzdqzoli");
         return response.text();
       })
       .catch((error) => {
@@ -61,7 +85,7 @@ export default function SessionItem({ session, onSessionAdded }) {
 
     handleClose();
   }
-  
+
   return (
     <div
       key={session.id}
@@ -79,7 +103,7 @@ export default function SessionItem({ session, onSessionAdded }) {
             <span className="font-cabin text-lg">{exercise}</span>
             <button
               className="ml-4 text-accent1 font-luckiest text-3xl"
-              //onClick={() => handleDeleteExercise(exercise)}
+              onClick={() => handleDeleteExercise(exercise)}
             >
               ×
             </button>
@@ -88,7 +112,7 @@ export default function SessionItem({ session, onSessionAdded }) {
       </ul>
 
       {/* Bouton + pour ouvrir la popup */}
-      <div className="flex justify-center">
+      <div className="grid grid-cols-3 items-center mx-[5vw]">
         <button
           className="
          bg-accent2
@@ -98,12 +122,16 @@ export default function SessionItem({ session, onSessionAdded }) {
          flex items-center justify-center 
          font-luckiest text-3xl
          my-[2vh]
+         col-start-2
+         justify-self-center
          "
           onClick={handleOpen}
         >
           +
         </button>
-        <button>Supprimer</button>
+        <button className="w-[8vw] col-start-3 justify-self-end " onClick={handleDeleteSession}>
+          <img src="icones/bin.svg" className="w-full" />
+        </button>
       </div>
 
       {/* Popup du formulaire */}
@@ -170,7 +198,7 @@ export default function SessionItem({ session, onSessionAdded }) {
 }
 
 SessionItem.propTypes = {
-  onSessionAdded : PropTypes.func.isRequired,
+  onSessionAdded: PropTypes.func.isRequired,
   session: PropTypes.shape({
     id: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,

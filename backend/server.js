@@ -430,3 +430,88 @@ app.post("/add-exercise", verifyToken, (req, res) => {
     }
   );
 });
+
+app.delete("/delete-exercise/:sessionId/:exercise", verifyToken, (req, res) => {
+  console.log("\n----------------------------------------");
+  console.log("➡️ DELETE //delete-exercise/:sessionId/:exercise");
+
+  const userId = req.userId; // 1) userId extrait par verifyToken
+  const sessionId = req.params.sessionId; // 2) id de la séance dans l’URL
+  const exercise = req.params.exercise; // 3) exercice à retirer
+
+  // 4) On met le même exercice entre guillemets pour JSON_SEARCH
+  //    (JSON_QUOTE fait ça aussi mais ici on passe directement l’exercice brut)
+  const sql = `
+      UPDATE sessions
+      SET exercises = JSON_REMOVE(
+        exercises,
+        JSON_UNQUOTE(
+          JSON_SEARCH(exercises, 'one', ?, NULL, '$')
+        )
+      )
+      WHERE id = ? 
+        AND user_id = ? 
+        AND JSON_CONTAINS(exercises, JSON_QUOTE(?), '$')
+    `;
+
+  connection.query(
+    sql,
+    [exercise, sessionId, userId, exercise],
+    (err, result) => {
+      if (err) {
+        console.error("❌ Erreur SQL lors de la suppression :", err);
+        return res.status(500).json({ message: "Erreur serveur" });
+      }
+      if (result.affectedRows === 0) {
+        // Soit la séance n’existe pas, soit l’exercice n’était pas dans le JSON
+        return res.status(404).json({ message: "Exercice non trouvé" });
+      }
+      console.log("✅ Exercice supprimé avec succès !");
+      return res.status(200).json({ message: "Exercice supprimé" });
+    }
+  );
+});
+
+app.delete("/delete-session/:sessionId", verifyToken, (req, res) => {
+  console.log("\n----------------------------------------");
+  console.log("➡️ DELETE //delete-session/:sessionId");
+
+  // 1️⃣ On récupère l'id de l'utilisateur depuis le middleware verifyToken
+  const userId = req.userId;
+  // 2️⃣ On récupère l'id de la séance à supprimer depuis les params
+  const sessionId = req.params.sessionId;
+
+  // 3️⃣ On exécute la requête DELETE en s'assurant que la séance appartient bien à l'utilisateur
+  connection.query(
+    "DELETE FROM sessions WHERE user_id = ? AND id = ?",
+    [userId, sessionId],
+    (err, results) => {
+      if (err) {
+        // 4️⃣ Erreur SQL → on log et on renvoie un 500
+        console.error(
+          "❌ Erreur SQL lors de la suppression de la séance :",
+          err
+        );
+        return res
+          .status(500)
+          .json({ success: false, message: "Erreur serveur" });
+      }
+
+      if (results.affectedRows === 0) {
+        // 5️⃣ Aucune ligne supprimée → soit l'id n'existe pas, soit ne t’appartient pas
+        console.log(
+          "⚠️  Aucune séance trouvée à supprimer pour cet utilisateur"
+        );
+        return res
+          .status(404)
+          .json({ success: false, message: "Séance introuvable" });
+      }
+
+      // 6️⃣ Tout s'est bien passé
+      console.log("✅ Séance supprimée avec succès !");
+      return res
+        .status(200)
+        .json({ success: true, message: "Séance supprimée" });
+    }
+  );
+});
