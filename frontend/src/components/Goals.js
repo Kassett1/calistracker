@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
-function Goals({ refreshCount, onSessionAdded }) {
+function Goals({ refreshCount, onSessionAdded, serverBaseUrl }) {
   const [goals, setGoals] = useState(["4*10 Tractions", "4*15 Dips"]);
   const [newGoal, setNewGoal] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -9,7 +9,7 @@ function Goals({ refreshCount, onSessionAdded }) {
   const fetchGoals = () => {
     const token = localStorage.getItem("token");
 
-    fetch("http://localhost:3001/get-goals", {
+    fetch(`${serverBaseUrl}get-goals`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -30,7 +30,7 @@ function Goals({ refreshCount, onSessionAdded }) {
   const handleDeleteGoal = (g) => {
     const token = localStorage.getItem("token");
 
-    fetch(`http://localhost:3001/delete-goal/${g.id}`, {
+    fetch(`${serverBaseUrl}delete-goal/${g.id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -59,7 +59,7 @@ function Goals({ refreshCount, onSessionAdded }) {
 
     const token = localStorage.getItem("token");
 
-    fetch("http://localhost:3001/add-goal", {
+    fetch(`${serverBaseUrl}add-goal`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -191,6 +191,7 @@ function Goals({ refreshCount, onSessionAdded }) {
 Goals.propTypes = {
   refreshCount: PropTypes.number.isRequired,
   onSessionAdded: PropTypes.func.isRequired,
+  serverBaseUrl: PropTypes.string.isRequired,
 };
 
 export default Goals;

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 
-function NextSession({ onSessionAdded }) {
+function NextSession({ onSessionAdded, serverBaseUrl }) {
   const [session, setSession] = useState({
     date: new Date(2025, 4, 19),
     exercises: ["4*10 Tractions", "4*15 Dips"],
@@ -15,7 +15,7 @@ function NextSession({ onSessionAdded }) {
       date.getMonth() + 1
     }-${date.getDate()}`;
 
-    fetch("http://localhost:3001/add-date", {
+    fetch(`${serverBaseUrl}add-date`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -73,6 +73,7 @@ function NextSession({ onSessionAdded }) {
 
 NextSession.propTypes = {
   onSessionAdded: PropTypes.func.isRequired,
+  serverBaseUrl: PropTypes.string.isRequired,
 };
 
 export default NextSession;

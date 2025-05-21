@@ -9,6 +9,8 @@ import SessionsPage from "./pages/SessionsPage.js";
 function App() {
   const [refreshCount, setRefreshCount] = useState(0);
 
+  const serverBaseUrl = "http://localhost:3001/";
+
   return (
     <main>
       <BrowserRouter>
@@ -20,6 +22,7 @@ function App() {
               <Home
                 refreshCount={refreshCount}
                 onSessionAdded={() => setRefreshCount((c) => c + 1)}
+                serverBaseUrl={serverBaseUrl}
               />
             }
           />
@@ -31,6 +34,7 @@ function App() {
               <SessionsPage
                 refreshCount={refreshCount}
                 onSessionAdded={() => setRefreshCount((c) => c + 1)}
+                serverBaseUrl={serverBaseUrl}
               />
             }
           />

@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import SessionItem from "./SessionItem";
 import PropTypes from "prop-types";
 
-export default function SessionsList({ refreshCount, onSessionAdded }) {
+export default function SessionsList({ refreshCount, onSessionAdded, serverBaseUrl }) {
   const [sessions, setSessions] = useState([]);
 
   const fetchLists = () => {
     const token = localStorage.getItem("token");
 
-    fetch("http://localhost:3001/get-sessions", {
+    fetch(`${serverBaseUrl}get-sessions`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -38,6 +38,7 @@ export default function SessionsList({ refreshCount, onSessionAdded }) {
           key={session.id}
           session={session}
           onSessionAdded={onSessionAdded}
+          serverBaseUrl={serverBaseUrl}
         />
       ))}
     </>
@@ -47,4 +48,5 @@ export default function SessionsList({ refreshCount, onSessionAdded }) {
 SessionsList.propTypes = {
   refreshCount: PropTypes.number.isRequired,
   onSessionAdded: PropTypes.func.isRequired,
+  serverBaseUrl: PropTypes.string.isRequired,
 };

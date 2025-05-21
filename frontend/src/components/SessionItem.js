@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 
-export default function SessionItem({ session, onSessionAdded }) {
+export default function SessionItem({ session, onSessionAdded, serverBaseUrl }) {
   const [newExercise, setNewExercise] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const handleDeleteExercise = (exercise) => {
     const token = localStorage.getItem("token");
     fetch(
-      `http://localhost:3001/delete-exercise/${session.id}/${encodeURIComponent(
+      `${serverBaseUrl}delete-exercise/${session.id}/${encodeURIComponent(
         exercise
       )}`,
       {
@@ -30,7 +30,7 @@ export default function SessionItem({ session, onSessionAdded }) {
   const handleDeleteSession = () => {
     const token = localStorage.getItem("token");
     fetch(
-      `http://localhost:3001/delete-session/${session.id}`,
+      `${serverBaseUrl}delete-session/${session.id}`,
       {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
@@ -61,7 +61,7 @@ export default function SessionItem({ session, onSessionAdded }) {
 
     const token = localStorage.getItem("token");
 
-    fetch("http://localhost:3001/add-exercise", {
+    fetch(`${serverBaseUrl}add-exercise`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -76,7 +76,6 @@ export default function SessionItem({ session, onSessionAdded }) {
         if (!response.ok) throw new Error("Erreur lors de l'envoi");
         // ✅ Appelle onSessionAdded pour incrémenter refreshCount
         onSessionAdded();
-        console.log("qzdqzdqzoli");
         return response.text();
       })
       .catch((error) => {
@@ -204,5 +203,6 @@ SessionItem.propTypes = {
     name: PropTypes.string.isRequired,
     exercises: PropTypes.arrayOf(PropTypes.string).isRequired,
     day: PropTypes.string,
+    serverBaseUrl: PropTypes.string,
   }).isRequired,
 };

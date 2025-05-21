@@ -5,13 +5,13 @@ import Menu from "../components/Menu";
 import ProtectedRoute from "../components/ProtectedRoute";
 import PropTypes from "prop-types";
 
-function Home({ refreshCount, onSessionAdded }) {
+function Home({ refreshCount, onSessionAdded, serverBaseUrl }) {
   return (
     <>
       <ProtectedRoute>
-        <Calendar refreshCount={refreshCount} />
-        <NextSession onSessionAdded={onSessionAdded} />
-        <Goals refreshCount={refreshCount} onSessionAdded={onSessionAdded}/>
+        <Calendar refreshCount={refreshCount} serverBaseUrl={serverBaseUrl}/>
+        <NextSession onSessionAdded={onSessionAdded} serverBaseUrl={serverBaseUrl}/>
+        <Goals refreshCount={refreshCount} onSessionAdded={onSessionAdded} serverBaseUrl={serverBaseUrl}/>
         <Menu />
       </ProtectedRoute>
     </>
@@ -21,6 +21,7 @@ function Home({ refreshCount, onSessionAdded }) {
 Home.propTypes = {
   refreshCount: PropTypes.number.isRequired,
   onSessionAdded: PropTypes.func.isRequired,
+  serverBaseUrl: PropTypes.string.isRequired,
 };
 
 export default Home;

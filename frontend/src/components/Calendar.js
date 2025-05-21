@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
-function Calendar({ refreshCount }) {
+function Calendar({ refreshCount, serverBaseUrl }) {
   const date = new Date();
   const [currYear, setCurrYear] = useState(date.getFullYear());
   const [currMonth, setCurrMonth] = useState(date.getMonth());
@@ -74,7 +74,7 @@ function Calendar({ refreshCount }) {
   const fetchSessions = () => {
     const token = localStorage.getItem("token");
 
-    fetch("http://localhost:3001/get-dates", {
+    fetch(`${serverBaseUrl}get-dates`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -184,6 +184,7 @@ function Calendar({ refreshCount }) {
 
 Calendar.propTypes = {
   refreshCount: PropTypes.number.isRequired,
+  serverBaseUrl: PropTypes.string.isRequired,
 };
 
 export default Calendar;

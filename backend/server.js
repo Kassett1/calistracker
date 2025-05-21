@@ -515,3 +515,47 @@ app.delete("/delete-session/:sessionId", verifyToken, (req, res) => {
     }
   );
 });
+
+app.post("/add-session", verifyToken, (req, res) => {
+  console.log("\n----------------------------------------");
+
+  // Récupère l'objectif envoyée par le client
+  const sessionName = req.body.name;
+  const sessionDays = JSON.stringify(req.body.days);
+
+  // Récupère l'userId depuis le token
+  const userId = req.userId;
+
+  // Vérifie si l'objectif existe déjà pour cet utilisateur
+  connection.query(
+    "SELECT * FROM sessions WHERE name = ? AND user_id = ?",
+    [sessionName, userId],
+    (err, results) => {
+      if (err) {
+        console.error("❌ Erreur SQL lors de la vérification :", err);
+        return res.status(500).json({ message: "Erreur serveur" });
+      }
+
+      if (results.length > 0) {
+        // Si déjà présent → renvoie un 409 (conflit) et on arrête
+        console.log("⚠️  Séance déja enregistrée pour ce nom");
+        return res.status(409).json({ message: "Séance déja enregistrée pour ce nom" });
+      }
+
+      // Sinon, insère le nouvel objectif
+      connection.query(
+        "INSERT INTO sessions (user_id, name, days) VALUES (?, ?, ?)",
+        [userId, sessionName, sessionDays],
+        (err2) => {
+          if (err2) {
+            console.error("❌ Erreur SQL lors de l'insertion :", err2);
+            return res.status(500).json({ message: "Erreur d'insertion" });
+          }
+          console.log("📅 Séance insérée avec succès !");
+          // Tout s'est bien passé → renvoie un 201 Created
+          return res.status(201).json({ message: "Séance ajoutée" });
+        }
+      );
+    }
+  );
+});
