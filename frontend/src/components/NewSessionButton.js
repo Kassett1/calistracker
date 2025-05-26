@@ -21,6 +21,16 @@ function NewSessionButton({onSessionAdded, serverBaseUrl}) {
     });
   };
 
+  const week = [
+    "Lundi",
+    "Mardi",
+    "Mercredi",
+    "Jeudi",
+    "Vendredi",
+    "Samedi",
+    "Dimanche",
+  ]
+
   function handleSubmit(e) {
     e.preventDefault();
 
@@ -123,15 +133,7 @@ function NewSessionButton({onSessionAdded, serverBaseUrl}) {
 
           <p className="font-cabin text-xl">Jour(s) de la séance :</p>
           <div className="flex gap-[3vw] flex-wrap">
-            {[
-              "Lundi",
-              "Mardi",
-              "Mercredi",
-              "Jeudi",
-              "Vendredi",
-              "Samedi",
-              "Dimanche",
-            ].map((day) => (
+            {week.map((day) => (
               <label key={day} className="flex gap-[1vw] font-cabin">
                 <input
                   type="checkbox"
@@ -162,6 +164,7 @@ function NewSessionButton({onSessionAdded, serverBaseUrl}) {
           </button>
         </div>
       </form>
+
     </div>
   );
 }

@@ -368,7 +368,7 @@ app.get("/get-sessions", verifyToken, (req, res) => {
         id: session.id,
         name: session.name,
         exercises: JSON.parse(session.exercises),
-        day: session.day,
+        days: session.days,
       }));
 
       // 4. Envoi de la réponse JSON

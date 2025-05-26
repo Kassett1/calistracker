@@ -1,9 +1,26 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 
-export default function SessionItem({ session, onSessionAdded, serverBaseUrl }) {
+export default function SessionItem({
+  session,
+  onSessionAdded,
+  serverBaseUrl,
+}) {
   const [newExercise, setNewExercise] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
+
+  const [days, setDays] = useState(session.days);
+  const [isFormDaysOpen, setIsFormDaysOpen] = useState(false);
+
+  const week = [
+    "Lundi",
+    "Mardi",
+    "Mercredi",
+    "Jeudi",
+    "Vendredi",
+    "Samedi",
+    "Dimanche",
+  ]
 
   const handleDeleteExercise = (exercise) => {
     const token = localStorage.getItem("token");
@@ -29,13 +46,10 @@ export default function SessionItem({ session, onSessionAdded, serverBaseUrl }) 
 
   const handleDeleteSession = () => {
     const token = localStorage.getItem("token");
-    fetch(
-      `${serverBaseUrl}delete-session/${session.id}`,
-      {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    )
+    fetch(`${serverBaseUrl}delete-session/${session.id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then((r) => {
         if (!r.ok) throw new Error("Suppression échouée");
         return r.json();
@@ -85,6 +99,44 @@ export default function SessionItem({ session, onSessionAdded, serverBaseUrl }) 
     handleClose();
   }
 
+  const handleSelectDays = () => {
+    setIsFormDaysOpen(true);
+  }
+
+  const handleCloseDays = () => {
+    setIsFormDaysOpen(false);
+    setDays(session.days);
+  };
+
+  function handleSubmitDays(e) {
+    e.preventDefault();
+
+    const token = localStorage.getItem("token");
+
+    fetch(`${serverBaseUrl}add-exercise`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        id: session.id,
+        exercise: newExercise,
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error("Erreur lors de l'envoi");
+        // ✅ Appelle onSessionAdded pour incrémenter refreshCount
+        onSessionAdded();
+        return response.text();
+      })
+      .catch((error) => {
+        console.error("Erreur lors de l'envoi :", error);
+      });
+
+      handleCloseDays();
+  }
+
   return (
     <div
       key={session.id}
@@ -113,6 +165,12 @@ export default function SessionItem({ session, onSessionAdded, serverBaseUrl }) 
       {/* Bouton + pour ouvrir la popup */}
       <div className="grid grid-cols-3 items-center mx-[5vw]">
         <button
+          className="w-[8vw] justify-self-start "
+          onClick={handleSelectDays}
+        >
+          <img src="icones/calendar.svg" className="w-full" />
+        </button>
+        <button
           className="
          bg-accent2
          rounded-full
@@ -121,14 +179,16 @@ export default function SessionItem({ session, onSessionAdded, serverBaseUrl }) 
          flex items-center justify-center 
          font-luckiest text-3xl
          my-[2vh]
-         col-start-2
          justify-self-center
          "
           onClick={handleOpen}
         >
           +
         </button>
-        <button className="w-[8vw] col-start-3 justify-self-end " onClick={handleDeleteSession}>
+        <button
+          className="w-[8vw] justify-self-end "
+          onClick={handleDeleteSession}
+        >
           <img src="icones/bin.svg" className="w-full" />
         </button>
       </div>
@@ -182,6 +242,70 @@ export default function SessionItem({ session, onSessionAdded, serverBaseUrl }) 
               transition-colors duration-150
               "
           />
+          <button
+            type="submit"
+            className="bg-accent2 rounded-[10px] px-[3vw] py-[0.5vh]
+              border-t-[2px] border-l-[2px] border-b-[4px] border-r-[4px] border-color5
+              font-cabin text-l"
+          >
+            Ajouter
+          </button>
+        </div>
+      </form>
+
+       {/* Popup du formulaire changement jours */}
+       <form
+        onSubmit={(e) => handleSubmitDays(e)}
+        className={`
+          fixed inset-0 flex items-center justify-center
+          bg-black/50
+          z-20
+          transition-opacity duration-300
+          ${isFormDaysOpen ? "opacity-100" : "opacity-0 pointer-events-none"}
+        `}
+      >
+        <div
+          className="
+              relative
+              bg-color4 h-[50vh] w-[95vw] max-w-md
+              rounded-[10px]
+              border-t-[3px] border-l-[3px] border-b-[6px] border-r-[6px] border-color5
+              shadow-xl
+              flex flex-col items-center justify-center gap-[3vh]
+              p-4
+            "
+        >
+          <button
+            type="button"
+            className="absolute top-3 right-3 text-2xl"
+            onClick={handleCloseDays}
+          >
+            ×
+          </button>
+
+          <p className="font-cabin text-xl">Jour(s) de la séance :</p>
+          <div className="flex gap-[3vw] flex-wrap">
+            {week.map((day) => (
+              <label key={day} className="flex gap-[1vw] font-cabin">
+                <input
+                  type="checkbox"
+                  value={day}
+                  checked={days.includes(day)}
+                  onChange={(e) => {
+                    const { checked, value } = e.target;
+                    setDays((prev) => {
+                      const days = checked
+                        ? [...prev.days, value]
+                        : prev.days.filter((d) => d !== value);
+                      return { ...prev, days: days };
+                    });
+                  }}
+                />
+                {day}
+              </label>
+            ))}
+          </div>
+
           <button
             type="submit"
             className="bg-accent2 rounded-[10px] px-[3vw] py-[0.5vh]
