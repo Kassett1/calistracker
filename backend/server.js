@@ -539,7 +539,9 @@ app.post("/add-session", verifyToken, (req, res) => {
       if (results.length > 0) {
         // Si déjà présent → renvoie un 409 (conflit) et on arrête
         console.log("⚠️  Séance déja enregistrée pour ce nom");
-        return res.status(409).json({ message: "Séance déja enregistrée pour ce nom" });
+        return res
+          .status(409)
+          .json({ message: "Séance déja enregistrée pour ce nom" });
       }
 
       // Sinon, insère le nouvel objectif
@@ -556,6 +558,36 @@ app.post("/add-session", verifyToken, (req, res) => {
           return res.status(201).json({ message: "Séance ajoutée" });
         }
       );
+    }
+  );
+});
+
+app.patch("/sessions/:id/days", verifyToken, (req, res) => {
+  console.log("\n----------------------------------------");
+  console.log(`➡️ PATCH /sessions/${req.params.id}/days`);
+
+  const sessionId = req.params.id;
+  const days = JSON.stringify(req.body.days);
+  const userId = req.userId;
+
+  connection.query(
+    "UPDATE sessions SET days = ? WHERE id = ? AND user_id = ?",
+    [days, sessionId, userId],
+    (err, results) => {
+      if (err) {
+        console.error("❌ Erreur SQL :", err);
+        return res
+          .status(500)
+          .json({ success: false, message: "Erreur serveur" });
+      }
+      if (results.affectedRows === 0) {
+        console.log("⚠️  Séance introuvable ou pas à cet utilisateur");
+        return res
+          .status(404)
+          .json({ success: false, message: "Séance non trouvée" });
+      }
+      console.log("✅ Jours modifiés avec succès !");
+      return res.status(200).json({ success: true, message: "Jours modifiés" });
     }
   );
 });

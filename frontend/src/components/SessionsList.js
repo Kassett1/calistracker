@@ -27,7 +27,6 @@ export default function SessionsList({ refreshCount, onSessionAdded, serverBaseU
   };
 
   useEffect(() => {
-    console.log("test");
     fetchLists();
   }, [refreshCount]);
 

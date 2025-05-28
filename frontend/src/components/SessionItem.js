@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
 export default function SessionItem({
@@ -9,7 +9,7 @@ export default function SessionItem({
   const [newExercise, setNewExercise] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
 
-  const [days, setDays] = useState(session.days);
+  const [days, setDays] = useState(JSON.parse(session.days));
   const [isFormDaysOpen, setIsFormDaysOpen] = useState(false);
 
   const week = [
@@ -20,7 +20,7 @@ export default function SessionItem({
     "Vendredi",
     "Samedi",
     "Dimanche",
-  ]
+  ];
 
   const handleDeleteExercise = (exercise) => {
     const token = localStorage.getItem("token");
@@ -100,12 +100,13 @@ export default function SessionItem({
   }
 
   const handleSelectDays = () => {
+    // setDays([]);
     setIsFormDaysOpen(true);
-  }
+  };
 
   const handleCloseDays = () => {
+    setDays(JSON.parse(session.days));
     setIsFormDaysOpen(false);
-    setDays(session.days);
   };
 
   function handleSubmitDays(e) {
@@ -113,29 +114,30 @@ export default function SessionItem({
 
     const token = localStorage.getItem("token");
 
-    fetch(`${serverBaseUrl}add-exercise`, {
-      method: "POST",
+    fetch(`${serverBaseUrl}sessions/${session.id}/days`, {
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({
-        id: session.id,
-        exercise: newExercise,
-      }),
+      body: JSON.stringify({ days: days }),
     })
-      .then((response) => {
-        if (!response.ok) throw new Error("Erreur lors de l'envoi");
-        // ✅ Appelle onSessionAdded pour incrémenter refreshCount
-        onSessionAdded();
-        return response.text();
+      .then((res) => {
+        if (!res.ok) throw new Error("Échec de la mise à jour des jours");
+        return res.json();
       })
-      .catch((error) => {
-        console.error("Erreur lors de l'envoi :", error);
-      });
+      .then((data) => {
+        console.log(data.message);
+        onSessionAdded();
+      })
+      .catch(console.error);
 
-      handleCloseDays();
+    setIsFormDaysOpen(false);
   }
+
+  useEffect(() => {
+    setDays(JSON.parse(session.days));
+  }, [session.days]);
 
   return (
     <div
@@ -253,8 +255,8 @@ export default function SessionItem({
         </div>
       </form>
 
-       {/* Popup du formulaire changement jours */}
-       <form
+      {/* Popup du formulaire changement jours */}
+      <form
         onSubmit={(e) => handleSubmitDays(e)}
         className={`
           fixed inset-0 flex items-center justify-center
@@ -267,7 +269,7 @@ export default function SessionItem({
         <div
           className="
               relative
-              bg-color4 h-[50vh] w-[95vw] max-w-md
+              bg-color4 h-[35vh] w-[95vw] max-w-md
               rounded-[10px]
               border-t-[3px] border-l-[3px] border-b-[6px] border-r-[6px] border-color5
               shadow-xl
@@ -293,12 +295,11 @@ export default function SessionItem({
                   checked={days.includes(day)}
                   onChange={(e) => {
                     const { checked, value } = e.target;
-                    setDays((prev) => {
-                      const days = checked
-                        ? [...prev.days, value]
-                        : prev.days.filter((d) => d !== value);
-                      return { ...prev, days: days };
-                    });
+                    setDays((prev) =>
+                      checked
+                        ? [...prev, value]
+                        : prev.filter((d) => d !== value)
+                    );
                   }}
                 />
                 {day}
@@ -312,7 +313,7 @@ export default function SessionItem({
               border-t-[2px] border-l-[2px] border-b-[4px] border-r-[4px] border-color5
               font-cabin text-l"
           >
-            Ajouter
+            Modifier
           </button>
         </div>
       </form>
@@ -322,11 +323,11 @@ export default function SessionItem({
 
 SessionItem.propTypes = {
   onSessionAdded: PropTypes.func.isRequired,
+  serverBaseUrl: PropTypes.string,
   session: PropTypes.shape({
     id: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
     exercises: PropTypes.arrayOf(PropTypes.string).isRequired,
     day: PropTypes.string,
-    serverBaseUrl: PropTypes.string,
   }).isRequired,
 };
