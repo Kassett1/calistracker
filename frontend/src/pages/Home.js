@@ -10,7 +10,7 @@ function Home({ refreshCount, onSessionAdded, serverBaseUrl }) {
     <>
       <ProtectedRoute>
         <Calendar refreshCount={refreshCount} serverBaseUrl={serverBaseUrl}/>
-        <NextSession onSessionAdded={onSessionAdded} serverBaseUrl={serverBaseUrl}/>
+        <NextSession onSessionAdded={onSessionAdded} serverBaseUrl={serverBaseUrl} refreshCount={refreshCount}/>
         <Goals refreshCount={refreshCount} onSessionAdded={onSessionAdded} serverBaseUrl={serverBaseUrl}/>
         <Menu />
       </ProtectedRoute>
