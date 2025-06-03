@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
 function NextSession({ onSessionAdded, serverBaseUrl, refreshCount }) {
-  const [sessions, setSessions] = useState([]);
-
   const [displayedSessions, setDisplayedSessions] = useState([]);
 
   const today = new Date();
@@ -47,23 +45,25 @@ function NextSession({ onSessionAdded, serverBaseUrl, refreshCount }) {
 
         // 2. Transformer chaque session.days en dates concrètes en utilisant l’objet 'week' pré-calculé
         const sessionsWithDates = sessionsParsed.map((session) => {
-          const daysObjects = session.days.map((dayName) => {
-            const diff = week[dayName]; // nombre de jours à ajouter
-            const d = new Date(today); // copie de la date du jour
-            d.setDate(today.getDate() + diff); // on avance de “diff” jours
-            return {
-              date: d, // ex. Date("mercredi 4 juin 2025")
-              diff: diff, // ex. 6 (si aujourd’hui est jeudi)
-            };
-          });
+          if (session.days) {
+            const daysObjects = session.days.map((dayName) => {
+              const diff = week[dayName]; // nombre de jours à ajouter
+              const d = new Date(today); // copie de la date du jour
+              d.setDate(today.getDate() + diff); // on avance de “diff” jours
+              return {
+                date: d, // ex. Date("mercredi 4 juin 2025")
+                diff: diff, // ex. 6 (si aujourd’hui est jeudi)
+              };
+            });
 
-          return {
-            id: session.id,
-            user_id: session.user_id,
-            name: session.name,
-            exercises: session.exercises, // déjà un tableau
-            days: daysObjects, // tableau d’objets { date, diff }
-          };
+            return {
+              id: session.id,
+              user_id: session.user_id,
+              name: session.name,
+              exercises: session.exercises, // déjà un tableau
+              days: daysObjects, // tableau d’objets { date, diff }
+            };
+          }
         });
 
         // À présent, chaque “sessionWithDates” ressemble à :
@@ -125,7 +125,6 @@ function NextSession({ onSessionAdded, serverBaseUrl, refreshCount }) {
         // À ce stade, `best` est un tableau contenant la ou les séances dont
         // la plus petite “diff” est la plus faible de tout le lot.
 
-        setSessions(sessionsWithDates); // si tu veux garder l’historique complet
         setDisplayedSessions(best); // ici, on stocke uniquement la ou les prochaines séances
         onSessionAdded();
       })
@@ -137,7 +136,7 @@ function NextSession({ onSessionAdded, serverBaseUrl, refreshCount }) {
   const handleFinish = () => {
     const token = localStorage.getItem("token");
 
-    const date = displayedSessions.date;
+    const date = displayedSessions[0].next.date;
     const formattedDate = `${date.getFullYear()}-${
       date.getMonth() + 1
     }-${date.getDate()}`;
@@ -179,25 +178,31 @@ function NextSession({ onSessionAdded, serverBaseUrl, refreshCount }) {
       <h2 className="bg-color3 text-center rounded-t-[5px] border-b-[3px] border-color5 px-[5vw] py-[2vh] current-date font-luckiest text-3xl">
         Prochaines séances
       </h2>
-      {displayedSessions.map((session) => (
-        <div className="flex flex-col items-center gap-[2vh]">
-          <p className="mt-[2vh] current-date font-cabin text-xl">date</p>
-          <ul className="flex flex-col gap-[1vh]">
-            {session.exercises.map((exercice, index) => (
-              <li key={index} className="font-cabin text-lg">
-                {exercice}
-              </li>
-            ))}
-          </ul>
-          <button
-            className="bg-accent2 rounded-[10px] px-[3vw] py-[0.5vh] border-t-[2px] border-l-[2px] border-b-[4px] border-r-[4px] 
-    border-color5 mb-[2vh] font-cabin text-xl"
-            onClick={handleFinish}
+
+      {displayedSessions.length > 0 &&
+        displayedSessions.map((session) => (
+          <div
+            key={session.id}
+            className="flex flex-col items-center gap-[2vh]"
           >
-            Terminer
-          </button>
-        </div>
-      ))}
+            <p className="mt-[2vh] current-date font-cabin text-2xl">
+              {session.next.date &&
+                session.next.date.toLocaleDateString("fr-FR", {
+                  weekday: "long",
+                  day: "2-digit",
+                  month: "2-digit",
+                })}
+            </p>
+            <p className="current-date font-cabin text-xl">{session.name}</p>
+            <button
+              className="bg-accent2 rounded-[10px] px-[3vw] py-[0.5vh] border-t-[2px] border-l-[2px] border-b-[4px] border-r-[4px] 
+          border-color5 mb-[2vh] font-cabin text-xl"
+              onClick={handleFinish}
+            >
+              Terminer
+            </button>
+          </div>
+        ))}
     </div>
   );
 }

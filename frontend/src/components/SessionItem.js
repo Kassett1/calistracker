@@ -235,7 +235,7 @@ export default function SessionItem({
             value={newExercise}
             onChange={(e) => setNewExercise(e.target.value)}
             required
-            placeholder="Ex : 50 pompes"
+            placeholder="Ex : 4*15 pompes"
             className="bg-color1 rounded-[10px] px-[3vw] py-[0.5vh]
               border-t-[2px] border-l-[2px] border-b-[4px] border-r-[4px] border-color5
               font-cabin text-l w-full
