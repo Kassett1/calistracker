@@ -6,11 +6,12 @@ function Menu() {
     // { src: "/icones/graphic-icon.svg", to: "/stats" },
     { src: "/icones/sport-icon.svg", to: "/sessions" },
     { src: "/icones/chrono-icon.svg", to: "/chrono" },
+    { src: "/icones/login-icon.svg", to: "/login" },
   ];
 
   return (
     <div className="bg-color5 fixed bottom-0 w-full">
-      <ul className="flex gap-[3vw] justify-between px-[15vw] relative bottom-[3vh]">
+      <ul className="flex gap-[3vw] justify-between px-[5vw] relative bottom-[3vh]">
         {items.map(({ src, to }, i) => (
           <li
             key={i}

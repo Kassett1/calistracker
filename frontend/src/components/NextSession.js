@@ -196,7 +196,8 @@ function NextSession({ onSessionAdded, serverBaseUrl, refreshCount }) {
             <p className="current-date font-cabin text-xl">{session.name}</p>
             <button
               className="bg-accent2 rounded-[10px] px-[3vw] py-[0.5vh] border-t-[2px] border-l-[2px] border-b-[4px] border-r-[4px] 
-          border-color5 mb-[2vh] font-cabin text-xl"
+          border-color5 mb-[2vh] font-cabin text-xl
+          transition-transform duration-100 active:scale-95"
               onClick={handleFinish}
             >
               Terminer

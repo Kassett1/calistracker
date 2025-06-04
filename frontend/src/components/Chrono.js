@@ -98,13 +98,19 @@ function Chrono() {
       {/* Boutons */}
       <div className="flex justify-center w-full gap-[10vw]">
         {state === "stopped" && (
-          <button onClick={handleReset} className="transition-all duration-300">
+          <button
+            onClick={handleReset}
+            className="transition-all duration-300 active:scale-95"
+          >
             <img src="/icones/reset.svg" alt="Reset" className="h-[15vw]" />
           </button>
         )}
 
         {(state === "initial" || state === "stopped") && (
-          <button onClick={handleStart} className="transition-all duration-300">
+          <button
+            onClick={handleStart}
+            className="transition-all duration-300 active:scale-95"
+          >
             <img src="/icones/play.svg" alt="Play" className="h-[15vw]" />
           </button>
         )}
@@ -112,7 +118,7 @@ function Chrono() {
         {state === "running" && (
           <button
             onClick={() => handleCheckpoint(elapsedTime)}
-            className="transition-all duration-300"
+            className="transition-all duration-300 active:scale-95"
           >
             <img
               src="/icones/checkpoint.svg"
@@ -123,7 +129,10 @@ function Chrono() {
         )}
 
         {state === "running" && (
-          <button onClick={handleStop} className="transition-all duration-300">
+          <button
+            onClick={handleStop}
+            className="transition-all duration-300 active:scale-95"
+          >
             <img src="/icones/pause.svg" alt="Pause" className="h-[15vw]" />
           </button>
         )}

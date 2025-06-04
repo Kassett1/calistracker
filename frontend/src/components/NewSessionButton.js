@@ -158,7 +158,8 @@ function NewSessionButton({onSessionAdded, serverBaseUrl}) {
             type="submit"
             className="bg-accent2 rounded-[10px] px-[3vw] py-[0.5vh]
               border-t-[2px] border-l-[2px] border-b-[4px] border-r-[4px] border-color5
-              font-cabin text-l"
+              font-cabin text-l
+              transition-transform duration-100 active:scale-95"
           >
             Ajouter
           </button>

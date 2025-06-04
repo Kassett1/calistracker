@@ -167,7 +167,8 @@ export default function SessionItem({
       {/* Bouton + pour ouvrir la popup */}
       <div className="grid grid-cols-3 items-center mx-[5vw]">
         <button
-          className="w-[8vw] justify-self-start "
+          className="w-[8vw] justify-self-start
+          transition-transform duration-100 active:scale-95"
           onClick={handleSelectDays}
         >
           <img src="icones/calendar.svg" className="w-full" />
@@ -182,13 +183,15 @@ export default function SessionItem({
          font-luckiest text-3xl
          my-[2vh]
          justify-self-center
+         transition-transform duration-100 active:scale-95
          "
           onClick={handleOpen}
         >
           +
         </button>
         <button
-          className="w-[8vw] justify-self-end "
+          className="w-[8vw] justify-self-end
+          transition-transform duration-100 active:scale-95"
           onClick={handleDeleteSession}
         >
           <img src="icones/bin.svg" className="w-full" />
@@ -248,7 +251,8 @@ export default function SessionItem({
             type="submit"
             className="bg-accent2 rounded-[10px] px-[3vw] py-[0.5vh]
               border-t-[2px] border-l-[2px] border-b-[4px] border-r-[4px] border-color5
-              font-cabin text-l"
+              font-cabin text-l
+              transition-transform duration-100 active:scale-95"
           >
             Ajouter
           </button>
@@ -311,7 +315,8 @@ export default function SessionItem({
             type="submit"
             className="bg-accent2 rounded-[10px] px-[3vw] py-[0.5vh]
               border-t-[2px] border-l-[2px] border-b-[4px] border-r-[4px] border-color5
-              font-cabin text-l"
+              font-cabin text-l
+              transition-transform duration-100 active:scale-95"
           >
             Modifier
           </button>
