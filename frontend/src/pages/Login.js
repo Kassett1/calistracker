@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Menu from "../components/Menu";
+import PropTypes from "prop-types";
 
-function Login() {
+function Login({ currentPage, setCurrentPage }) {
+  setCurrentPage("login");
+
   const [mode, setMode] = useState("login");
 
   const navigate = useNavigate();
@@ -158,9 +161,14 @@ function Login() {
           Déconnexion
         </button>
       </div>
-      <Menu />
+      <Menu currentPage={currentPage} />
     </>
   );
 }
+
+Login.propTypes = {
+  currentPage: PropTypes.string.isRequired,
+  setCurrentPage: PropTypes.func.isRequired,
+};
 
 export default Login;

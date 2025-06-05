@@ -9,13 +9,23 @@ import SessionsPage from "./pages/SessionsPage.js";
 function App() {
   const [refreshCount, setRefreshCount] = useState(0);
 
+  const [currentPage, setCurrentPage] = useState("");
+
   const serverBaseUrl = "http://localhost:3001/";
 
   return (
     <main>
       <BrowserRouter>
         <Routes>
-          <Route path="/login" element={<Login />} />
+          <Route
+            path="/login"
+            element={
+              <Login
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+              />
+            }
+          />
           <Route
             path="/"
             element={
@@ -23,11 +33,20 @@ function App() {
                 refreshCount={refreshCount}
                 onSessionAdded={() => setRefreshCount((c) => c + 1)}
                 serverBaseUrl={serverBaseUrl}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
               />
             }
           />
-          sessions
-          <Route path="/chrono" element={<Chronometer />} />s
+          <Route
+            path="/chrono"
+            element={
+              <Chronometer
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+              />
+            }
+          />
           <Route
             path="/sessions"
             element={
@@ -35,6 +54,8 @@ function App() {
                 refreshCount={refreshCount}
                 onSessionAdded={() => setRefreshCount((c) => c + 1)}
                 serverBaseUrl={serverBaseUrl}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
               />
             }
           />
