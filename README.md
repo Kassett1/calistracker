@@ -49,11 +49,11 @@ Calis Tracker est une Progressive Web App (PWA) de suivi de séances de sport qu
 2. **Démarrer le serveur (backend)**
 
    - cd backend
-   - npm install        # (si ce n’est pas déjà fait)
+   - npm install         (si ce n’est pas déjà fait)
    - node server.js
   
 3. **Démarrer le frontend**
 
    - cd ../frontend
-   - npm install        # (si ce n’est pas déjà fait)
+   - npm install         (si ce n’est pas déjà fait)
    - npm run start
