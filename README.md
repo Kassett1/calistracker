@@ -4,8 +4,6 @@ Calis Tracker est une Progressive Web App (PWA) de suivi de séances de sport qu
 
 ---
 
-## Aperçu
-
 > **ℹ️ Pour une expérience optimale, utilisez Calis Tracker en affichage mobile (taille d’écran réduite) ou directement sur votre téléphone.**
 
 ---
